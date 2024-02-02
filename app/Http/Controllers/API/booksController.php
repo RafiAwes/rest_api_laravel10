@@ -35,7 +35,7 @@ class booksController extends Controller
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'genre' => 'required|string|max:255',
-            'price' => 'required|digits:10',
+            'price' => 'required',
         ]);
 
         if($validator->fails()){
@@ -52,11 +52,39 @@ class booksController extends Controller
             'author' => $request->author,
             'genre' => $request->genre,
             'price' => $request->price,
-            ])
+            ]);
+
+            if($books){
+
+                return response()->json([
+                    'status' => 200,
+                    'message'=> "Book added successfully"
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' => 500,
+                    'message'=> "Something went wrong"
+                ], 500);
+            }
 
         }
+    }
 
+    public function show($id){
+        $book = books::find($id);
 
+        if($book){
+            return response()->json([
+                'status' => 200,
+                'book'=> $book
+            ], 200);
+
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message'=> "Books not found"
+            ], 404);
+        }
 
     }
 }
