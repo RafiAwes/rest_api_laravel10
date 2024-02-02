@@ -87,4 +87,63 @@ class booksController extends Controller
         }
 
     }
+
+    public function update(Request $request, int $id){
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
+            'price' => 'required',
+        ]);
+
+        if($validator->fails()){
+
+            return response()->json([
+                    'status' => 422,
+                    'errors' => $validator->messages()
+                ], 422);
+        }else{
+
+
+            $books = books::find($id);
+
+            if($books){
+
+                $books->update([
+                    'title' => $request->title,
+                    'author' => $request->author,
+                    'genre' => $request->genre,
+                    'price' => $request->price,
+                    ]);
+
+                return response()->json([
+                    'status' => 200,
+                    'message'=> "Book updated successfully"
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' => 404,
+                    'message'=> "Something went wrong"
+                ], 404);
+            }
+
+        }
+    }
+
+    public function name(Request $request){
+        $book = book::where('title', $request->title)->get();
+
+        if($book){
+            return response()->json([
+                'status' => 200,
+                'book'=> $book
+            ], 200);
+        }else{
+            return response()->json([
+                'status' => 404,
+                'message'=> "Books not found"
+            ], 404);
+        }
+    }
 }
